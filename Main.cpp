@@ -17,17 +17,12 @@
 
 int main()
 {
-    int N = 14;
-    double V = 58.64306286700946;
-    // std::cout << "N = ";
-    // std::cin >> N; 
-    // std::cout << "V = ";
-    // std::cin >> V;
-    double n = (double)N / V;
+    double n = 10.0;
+    double V = 10000.0;
+
     double rs = pow(3.0 / (4.0 * M_PI * n), 1.0 / 3.0);
     std::cout << "rs = " << rs << std::endl;
-    UEG myUEG(N, V);
-    myUEG.FillLevels();
+    UEG myUEG(n, V);
     myUEG.PrintHighestOcc();
     myUEG.CalcKinetic();
     std::cout << 0.6 * std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << std::endl;

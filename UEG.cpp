@@ -17,31 +17,26 @@
 
 void UEG::FillLevels()
 {
-    int NumPairs = NumElectrons / 2;
-    std::vector< std::tuple<double, int, int, int> > UnsortedLevels;
-    int SearchN = 100;
-    for (int nx = 0; nx < SearchN; nx++)
+    double k2Max = kF * kF;
+    for (int nx = -nxMax; nx < nxMax + 1; nx++)
     {
-        for (int ny = 0; ny < SearchN; ny++)
+        for (int ny = -nyMax; ny < nyMax + 1; ny++)
         {
-            for (int nz = 0; nz < SearchN; nz++)
+            for (int nz = -nzMax; nz < nzMax + 1; nz++)
             {
-                double E = 2.0 * M_PI * M_PI * ((nx / Lx) * (nx / Lx) + (ny / Ly) * (ny / Ly) + (nz / Lz) * (nz / Lz));
-                std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
-                UnsortedLevels.push_back(tmpTuple);
+                double k2 = nx * nx * dkx * dkx + ny * ny * dky * dky + nz * nz * dkz * dkz;
+                if (k2 < k2Max)
+                {
+                    double E = 0.5 * k2;
+                    std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
+                    aOccupiedLevels.push_back(tmpTuple);
+                    bOccupiedLevels.push_back(tmpTuple);
+                }
             }
         }
     }
-    std::sort(UnsortedLevels.begin(), UnsortedLevels.end());
-    for (int i = 0; i < NumPairs; i++)
-    {
-        aOccupiedLevels.push_back(UnsortedLevels[i]);
-        bOccupiedLevels.push_back(UnsortedLevels[i]);
-    }
-    if (NumElectrons % 2 != 0)
-    {
-        aOccupiedLevels.push_back(UnsortedLevels[NumPairs]);
-    }
+    std::sort(aOccupiedLevels.begin(), aOccupiedLevels.end());
+    std::sort(bOccupiedLevels.begin(), bOccupiedLevels.end());
 }
 
 void UEG::CalcKinetic()
@@ -123,10 +118,16 @@ void UEG::PrintOrbitalEnergies()
     }
 }
 
-UEG::UEG(int NumElec, double V)
+UEG::UEG(double p, double V)
 {
-    NumElectrons = NumElec;
+    NumElectrons = p * V;
     Volume = V;
     Lx = Ly = Lz = cbrt(Volume);
-    n = (double)NumElectrons / Volume;
+    n = p;
+
+    kF = pow(3.0 * M_PI * M_PI * p, 1.0 / 3.0);
+    dkx = dky = dkz = 2 * M_PI / Lx;
+    nxMax = nyMax = nzMax = ceil(kF / dkx);
+
+    FillLevels();
 }

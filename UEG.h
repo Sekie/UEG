@@ -18,7 +18,7 @@
 class UEG
 {
     public:
-        double Lx, Ly, Lz, Volume, kMax, kF;
+        double Lx, Ly, Lz, Volume, kMax, kF, dkx, dky, dkz;
         int NumElectrons, nxMax, nyMax, nzMax;
         std::vector< std::tuple<double, int, int, int> > aOccupiedLevels;
         std::vector< std::tuple<double, int, int, int> > bOccupiedLevels;
@@ -32,5 +32,5 @@ class UEG
         void PrintLevel(int);
         void PrintOrbitalEnergies();
 
-        UEG(int, double);
+        UEG(double, double);
 };
