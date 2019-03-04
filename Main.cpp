@@ -17,13 +17,27 @@
 
 int main()
 {
-    UEG myUEG(1E2, 1E4);
+    int N = 14;
+    double V = 58.64306286700946;
+    // std::cout << "N = ";
+    // std::cin >> N; 
+    // std::cout << "V = ";
+    // std::cin >> V;
+    double n = (double)N / V;
+    double rs = pow(3.0 / (4.0 * M_PI * n), 1.0 / 3.0);
+    std::cout << "rs = " << rs << std::endl;
+    UEG myUEG(N, V);
     myUEG.FillLevels();
+    myUEG.PrintHighestOcc();
     myUEG.CalcKinetic();
     std::cout << 0.6 * std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << std::endl;
-    std::cout << std::get<1>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << "\t" << std::get<2>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << "\t" << std::get<3>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << std::endl;
     std::cout << myUEG.EKinetic / (double)myUEG.NumElectrons << std::endl;
 
     myUEG.CalcExchange();
+    std::cout << -V * pow(std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]), 4) / (4.0 * M_PI * M_PI * M_PI * (double)myUEG.NumElectrons) << std::endl;
+    // std::cout << - pow(std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]), 4) << std::endl;
     std::cout << myUEG.EExchange << std::endl;
+
+    std::cout << "E_HF / N = " << 2.21 / (rs * rs) << " - " << 0.916 / rs << " = " << 2.21 / (rs * rs) - 0.916 / rs << std::endl;
+    std::cout << "E_EX / N = " << 2.21 / (rs * rs) - 0.916 / rs - 0.6 * std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) << std::endl;
 }

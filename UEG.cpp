@@ -75,7 +75,6 @@ double UEG::OneOverK2(int i, int j, bool SpinAlpha)
 
     double KInv = 4.0 * M_PI * M_PI * (dnx * dnx / (Lx * Lx) + dny * dny / (Ly * Ly) + dnz * dnz / (Lz * Lz));
     KInv = 1.0 / KInv;
-
     
     return KInv;
 }
@@ -101,6 +100,27 @@ void UEG::CalcExchange()
     }
 
     EExchange *= -4.0 * M_PI / Volume;
+}
+
+void UEG::PrintHighestOcc()
+{
+    std::cout << "The highest occupied level is:" << std::endl;
+    std::cout << std::get<1>(aOccupiedLevels[aOccupiedLevels.size() - 1]) << "\t" << std::get<2>(aOccupiedLevels[aOccupiedLevels.size() - 1]) << "\t" << std::get<3>(aOccupiedLevels[aOccupiedLevels.size() - 1]) << std::endl;
+}
+
+void UEG::PrintLevel(int Level)
+{
+    std::cout << "The " << Level << " level is:" << std::endl;
+    std::cout << std::get<1>(aOccupiedLevels[Level]) << "\t" << std::get<2>(aOccupiedLevels[Level]) << "\t" << std::get<3>(aOccupiedLevels[Level]) << std::endl;
+}
+
+void UEG::PrintOrbitalEnergies()
+{
+    std::cout << "The orbital energies are:" << std::endl;
+    for (int i = 0; i < NumElectrons / 2; i++)
+    {
+        std::cout << std::get<0>(aOccupiedLevels[i]) << std::endl;
+    }
 }
 
 UEG::UEG(int NumElec, double V)

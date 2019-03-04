@@ -28,6 +28,9 @@ class UEG
         void CalcKinetic();
         void CalcExchange();
         double OneOverK2(int, int, bool);
+        void PrintHighestOcc();
+        void PrintLevel(int);
+        void PrintOrbitalEnergies();
 
         UEG(int, double);
 };
