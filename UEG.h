@@ -18,7 +18,7 @@
 class UEG
 {
     public:
-        double Lx, Ly, Lz, Volume, kMax, kF, dkx, dky, dkz;
+        double Lx, Ly, Lz, Volume, kMax, kF, dkx, dky, dkz, rs;
         int NumElectrons, nxMax, nyMax, nzMax;
         std::vector< std::tuple<double, int, int, int> > aOccupiedLevels;
         std::vector< std::tuple<double, int, int, int> > bOccupiedLevels;
@@ -27,6 +27,8 @@ class UEG
         void FillLevels();
         void CalcKinetic();
         void CalcExchange();
+        double CalcAnalyticalKinetic();
+        double CalcAnalyticalExchange();
         double OneOverK2(int, int, bool);
         void PrintHighestOcc();
         void PrintLevel(int);

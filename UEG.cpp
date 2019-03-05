@@ -69,6 +69,10 @@ double UEG::OneOverK2(int i, int j, bool SpinAlpha)
     }
 
     double KInv = 4.0 * M_PI * M_PI * (dnx * dnx / (Lx * Lx) + dny * dny / (Ly * Ly) + dnz * dnz / (Lz * Lz));
+    if (fabs(KInv) < 1E-3)
+    {
+        std::cout << "KInv is 0 for " << std::get<1>(aOccupiedLevels[i]) << " " << std::get<1>(aOccupiedLevels[j]) << " " << SpinAlpha << std::endl;
+    }
     KInv = 1.0 / KInv;
     
     return KInv;
@@ -77,24 +81,34 @@ double UEG::OneOverK2(int i, int j, bool SpinAlpha)
 void UEG::CalcExchange()
 {
     EExchange = 0.0;
-    int NumPairs = NumElectrons / 2;
-    for (int i = 0; i < NumPairs; i++)
+    for (int i = 0; i < aOccupiedLevels.size(); i++)
     {
-        for (int j = i + 1; j < NumPairs; j++)
+        for (int j = i + 1; j < aOccupiedLevels.size(); j++)
         {
-            EExchange += OneOverK2(i, j, true) + OneOverK2(i, j, false);
+            EExchange += OneOverK2(i, j, true);
         }
     }
-
-    if (NumElectrons % 2 != 0)
+    for (int i = 0; i < bOccupiedLevels.size(); i++)
     {
-        for (int j = 0; j < NumPairs; j++)
+        for (int j = i + 1; j < bOccupiedLevels.size(); j++)
         {
-            EExchange += OneOverK2(NumPairs, j, true);
+            EExchange += OneOverK2(i, j, false);
         }
     }
 
     EExchange *= -4.0 * M_PI / Volume;
+}
+
+double UEG::CalcAnalyticalKinetic()
+{
+    double KE = 0.6 * std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) * NumElectrons;
+    return KE;
+}
+
+double UEG::CalcAnalyticalExchange()
+{
+    double X = -Volume * pow(kF, 4) / (4.0 * M_PI * M_PI * M_PI)
+    return X;
 }
 
 void UEG::PrintHighestOcc()
@@ -124,6 +138,7 @@ UEG::UEG(double p, double V)
     Volume = V;
     Lx = Ly = Lz = cbrt(Volume);
     n = p;
+    rs = pow(3.0 / (4.0 * M_PI * p), 1.0 / 3.0)
 
     kF = pow(3.0 * M_PI * M_PI * p, 1.0 / 3.0);
     dkx = dky = dkz = 2 * M_PI / Lx;
