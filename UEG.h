@@ -25,6 +25,7 @@ class UEG
         double EExchange, EFermi, EKinetic, n;
 
         void FillLevels();
+        void ExciteUEG(double, double, double);
         void CalcKinetic();
         void CalcExchange();
         double CalcAnalyticalKinetic();
@@ -35,4 +36,7 @@ class UEG
         void PrintOrbitalEnergies();
 
         UEG(double, double);
+        UEG();
+        
+        double C_TF = 3.0 * M_PI * M_PI / 10.0 * pow(3.0 / M_PI, 2.0 / 3.0);
 };

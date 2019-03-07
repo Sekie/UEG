@@ -88,26 +88,26 @@ void UEG::CalcExchange()
             EExchange += OneOverK2(i, j, true);
         }
     }
-    for (int i = 0; i < bOccupiedLevels.size(); i++)
-    {
-        for (int j = i + 1; j < bOccupiedLevels.size(); j++)
-        {
-            EExchange += OneOverK2(i, j, false);
-        }
-    }
+    // for (int i = 0; i < bOccupiedLevels.size(); i++)
+    // {
+    //     for (int j = i + 1; j < bOccupiedLevels.size(); j++)
+    //     {
+    //         EExchange += OneOverK2(i, j, false);
+    //     }
+    // }
 
-    EExchange *= -4.0 * M_PI / Volume;
+    EExchange *= 2.0 * -4.0 * M_PI / Volume;
 }
 
 double UEG::CalcAnalyticalKinetic()
 {
-    double KE = 0.6 * std::get<0>(myUEG.aOccupiedLevels[myUEG.aOccupiedLevels.size() - 1]) * NumElectrons;
+    double KE = 0.6 * std::get<0>(aOccupiedLevels[aOccupiedLevels.size() - 1]) * NumElectrons;
     return KE;
 }
 
 double UEG::CalcAnalyticalExchange()
 {
-    double X = -Volume * pow(kF, 4) / (4.0 * M_PI * M_PI * M_PI)
+    double X = -Volume * pow(kF, 4) / (4.0 * M_PI * M_PI * M_PI);
     return X;
 }
 
@@ -132,17 +132,65 @@ void UEG::PrintOrbitalEnergies()
     }
 }
 
+void UEG::ExciteUEG(double kg, double dk, double kx)
+{
+    int NumOcc = aOccupiedLevels.size();
+    aOccupiedLevels.clear();
+    bOccupiedLevels.clear();
+    std::vector< std::tuple<double, int, int, int> > ExcitedLevels;
+    double k2Max = kF * kF;
+    for (int nx = -4 * nxMax; nx < 4 * nxMax + 1; nx++)
+    {
+        for (int ny = -4 * nyMax; ny < 4 * nyMax + 1; ny++)
+        {
+            for (int nz = -4 * nzMax; nz < 4 * nzMax + 1; nz++)
+            {
+                double k2 = nx * nx * dkx * dkx + ny * ny * dky * dky + nz * nz * dkz * dkz;
+                if ((k2 < k2Max && k2 < kg * kg && k2 > (kg + dk) * (kg + dk)))
+                {
+                    double E = 0.5 * k2;
+                    std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
+                    aOccupiedLevels.push_back(tmpTuple);
+                    bOccupiedLevels.push_back(tmpTuple);
+                }
+
+                if (k2 > kx * kx)
+                {
+                    double E = 0.5 * k2;
+                    std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
+                    ExcitedLevels.push_back(tmpTuple);
+                }
+            }
+        }
+    }
+    std::sort(aOccupiedLevels.begin(), aOccupiedLevels.end());
+    std::sort(bOccupiedLevels.begin(), bOccupiedLevels.end());
+    std::sort(ExcitedLevels.begin(), ExcitedLevels.end());
+    
+    int MissingOcc = NumOcc - aOccupiedLevels.size();
+    for (int i = 0; i < MissingOcc; i++)
+    {
+        aOccupiedLevels.push_back(ExcitedLevels[i]);
+        bOccupiedLevels.push_back(ExcitedLevels[i]);
+    }
+}
+
 UEG::UEG(double p, double V)
 {
     NumElectrons = p * V;
     Volume = V;
     Lx = Ly = Lz = cbrt(Volume);
     n = p;
-    rs = pow(3.0 / (4.0 * M_PI * p), 1.0 / 3.0)
+    rs = pow(3.0 / (4.0 * M_PI * p), 1.0 / 3.0);
 
     kF = pow(3.0 * M_PI * M_PI * p, 1.0 / 3.0);
     dkx = dky = dkz = 2 * M_PI / Lx;
     nxMax = nyMax = nzMax = ceil(kF / dkx);
 
     FillLevels();
+}
+
+UEG::UEG()
+{
+    // Just a default constructor
 }
