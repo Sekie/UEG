@@ -71,7 +71,7 @@ double UEG::OneOverK2(int i, int j, bool SpinAlpha)
     double KInv = 4.0 * M_PI * M_PI * (dnx * dnx / (Lx * Lx) + dny * dny / (Ly * Ly) + dnz * dnz / (Lz * Lz));
     if (fabs(KInv) < 1E-3)
     {
-        std::cout << "KInv is 0 for " << std::get<1>(aOccupiedLevels[i]) << " " << std::get<1>(aOccupiedLevels[j]) << " " << SpinAlpha << std::endl;
+        std::cout << "KInv is 0 for " << i << " " << j << " " << SpinAlpha << std::endl;
     }
     KInv = 1.0 / KInv;
     
@@ -172,6 +172,40 @@ void UEG::ExciteUEG(double kg, double dk, double kx)
     {
         aOccupiedLevels.push_back(ExcitedLevels[i]);
         bOccupiedLevels.push_back(ExcitedLevels[i]);
+    }
+}
+
+void UEG::RandomExciteUEG(int MaxNx, int MaxNy, int MaxNz)
+{
+    int NumOcc = aOccupiedLevels.size();
+    aOccupiedLevels.clear();
+    bOccupiedLevels.clear();
+
+    for (int i = 0; i < NumOcc; i++)
+    {
+        int nx = (rand() % (2 * MaxNx)) - MaxNx;
+        int ny = (rand() % (2 * MaxNy)) - MaxNy;
+        int nz = (rand() % (2 * MaxNz)) - MaxNz;
+        bool Repeat = false;
+        for (int j = 0; j < aOccupiedLevels.size(); j++)
+        {
+            if (nx == std::get<1>(aOccupiedLevels[j]) && ny == std::get<2>(aOccupiedLevels[j]) && nz == std::get<3>(aOccupiedLevels[j]))
+            {
+                Repeat = true;
+                break;
+            }
+        }
+        if (Repeat)
+        {
+            i--;
+            continue;
+        }
+        // std::cout << nx << "\t" << ny << "\t" << nz << std::endl;
+        double k2 = nx * nx * dkx * dkx + ny * ny * dky * dky + nz * nz * dkz * dkz;
+        double E = k2 / 2.0;
+        std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
+        aOccupiedLevels.push_back(tmpTuple);
+        bOccupiedLevels.push_back(tmpTuple);
     }
 }
 

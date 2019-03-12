@@ -25,13 +25,11 @@ double ExcitedFunctional::CalculateExchange()
 void ExcitedFunctional::GenerateExchange()
 {
     std::ofstream Output("xvsk.txt");
-    for (int i = 0; i < 100; i++)
+    for (int n = 10; n < 100; n++)
     {
-        for (int j = 0; j < 100; j++)
+        for (int i = 0; i < 10; i++)
         {
-            double kg = (double)i / 100.0 * myUEG.kF;
-            double kx = ((double)j / 100.0 + 1.0) * myUEG.kF;
-            myUEG.ExciteUEG(kg, 0.01, kx);
+            myUEG.RandomExciteUEG(n, n, n);
             myUEG.CalcKinetic();
             myUEG.CalcExchange();
             Output << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << std::endl;

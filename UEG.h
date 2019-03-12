@@ -26,6 +26,7 @@ class UEG
 
         void FillLevels();
         void ExciteUEG(double, double, double);
+        void RandomExciteUEG(int, int, int);
         void CalcKinetic();
         void CalcExchange();
         double CalcAnalyticalKinetic();

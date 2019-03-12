@@ -20,10 +20,10 @@ int main()
 {
     // for (double V = 10; V < 1E6 + 1; V *= 10)
     // {
-    //     UEG myUEG(10.0, V);
-    //     myUEG.CalcKinetic();
-    //     myUEG.CalcExchange();
-    //     std::cout << V << "\t" << myUEG.EKinetic / (double)myUEG.NumElectrons << "\t" << myUEG.CalcAnalyticalKinetic() / (double)myUEG.NumElectrons << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << "\t" << myUEG.CalcAnalyticalExchange() / (double)myUEG.NumElectrons << std::endl;
+        // UEG myUEG(10.0, 1E6);
+        // myUEG.CalcKinetic();
+        // myUEG.CalcExchange();
+        // std::cout << 1E6 << "\t" << myUEG.EKinetic / (double)myUEG.NumElectrons << "\t" << myUEG.CalcAnalyticalKinetic() / (double)myUEG.NumElectrons << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << "\t" << myUEG.CalcAnalyticalExchange() / (double)myUEG.NumElectrons << std::endl;
     // }
     double n = 10.0;
     double V = 1000.0;
