@@ -78,6 +78,32 @@ double UEG::OneOverK2(int i, int j, bool SpinAlpha)
     return KInv;
 }
 
+double UEG::OneOverK2OccVir(int i, int j, bool SpinAlpha)
+{
+    double dnx, dny, dnz;
+    if (SpinAlpha)
+    {
+        dnx = std::get<1>(aOccupiedLevels[i]) - std::get<1>(aVirtualLevels[j]);
+        dny = std::get<2>(aOccupiedLevels[i]) - std::get<2>(aVirtualLevels[j]);
+        dnz = std::get<3>(aOccupiedLevels[i]) - std::get<3>(aVirtualLevels[j]);
+    }
+    else
+    {
+        dnx = std::get<1>(bOccupiedLevels[i]) - std::get<1>(bVirtualLevels[j]);
+        dny = std::get<2>(bOccupiedLevels[i]) - std::get<2>(bVirtualLevels[j]);
+        dnz = std::get<3>(bOccupiedLevels[i]) - std::get<3>(bVirtualLevels[j]);
+    }
+
+    double KInv = 4.0 * M_PI * M_PI * (dnx * dnx / (Lx * Lx) + dny * dny / (Ly * Ly) + dnz * dnz / (Lz * Lz));
+    if (fabs(KInv) < 1E-3)
+    {
+        std::cout << "KInv is 0 for " << i << " " << j << " " << SpinAlpha << std::endl;
+    }
+    KInv = 1.0 / KInv;
+    
+    return KInv;
+}
+
 void UEG::CalcExchange()
 {
     EExchange = 0.0;
@@ -99,9 +125,25 @@ void UEG::CalcExchange()
     EExchange *= 2.0 * -4.0 * M_PI / Volume;
 }
 
+void UEG::CalcExchangeVar()
+{
+    VarExchange = 0.0;
+    for (int i = 0; i < aOccupiedLevels.size(); i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            for (int a = 0; a < aVirtualLevels.size(); a++)
+            {
+                VarExchange += OneOverK2OccVir(i, a, true) * OneOverK2OccVir(j, a, true);
+            }
+        }
+    }
+    VarExchange *= ((4.0 * pow(2.0 * M_PI, 8)) / pow(Volume, 4)); // *4 for spin?
+}
+
 double UEG::CalcAnalyticalKinetic()
 {
-    double KE = 0.6 * std::get<0>(aOccupiedLevels[aOccupiedLevels.size() - 1]) * NumElectrons;
+    double KE = 0.3 * kF * kF * NumElectrons;
     return KE;
 }
 
@@ -207,6 +249,36 @@ void UEG::RandomExciteUEG(int MaxNx, int MaxNy, int MaxNz)
         aOccupiedLevels.push_back(tmpTuple);
         bOccupiedLevels.push_back(tmpTuple);
     }
+}
+
+void UEG::GetVirtual()
+{
+    for (int nx = nxMax; nx < nxMax + 1; nx++)
+    {
+        for (int ny = nyMax; ny < nyMax + 1; ny++)
+        {
+            for (int nz = nzMax; nz < nzMax + 1; nz++)
+            {
+                for (int i = 0; i < aOccupiedLevels.size(); i++)
+                {
+                    if (nx == std::get<1>(aOccupiedLevels[i]) && ny == std::get<2>(aOccupiedLevels[i]) && nz == std::get<3>(aOccupiedLevels[i]))
+                    {
+                        continue;
+                    }
+                    double k2 = nx * nx * dkx * dkx + ny * ny * dky * dky + nz * nz * dkz * dkz;
+                    double E = k2 / 2.0;
+                    std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
+                    aVirtualLevels.push_back(tmpTuple);
+                    bVirtualLevels.push_back(tmpTuple);
+                }
+            }
+        }
+    }
+}
+
+void UEG::SetNMax(int nMax)
+{
+    nxMax = nyMax = nzMax = nMax;
 }
 
 UEG::UEG(double p, double V)

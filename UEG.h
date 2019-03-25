@@ -22,19 +22,26 @@ class UEG
         int NumElectrons, nxMax, nyMax, nzMax;
         std::vector< std::tuple<double, int, int, int> > aOccupiedLevels;
         std::vector< std::tuple<double, int, int, int> > bOccupiedLevels;
-        double EExchange, EFermi, EKinetic, n;
+        std::vector< std::tuple<double, int, int, int> > aVirtualLevels;
+        std::vector< std::tuple<double, int, int, int> > bVirtualLevels;
+        double EExchange, EFermi, EKinetic, VarExchange, n;
 
         void FillLevels();
         void ExciteUEG(double, double, double);
         void RandomExciteUEG(int, int, int);
+        void GetVirtual();
         void CalcKinetic();
         void CalcExchange();
+        void CalcExchangeVar();
         double CalcAnalyticalKinetic();
         double CalcAnalyticalExchange();
         double OneOverK2(int, int, bool);
+        double OneOverK2OccVir(int, int, bool);
         void PrintHighestOcc();
         void PrintLevel(int);
         void PrintOrbitalEnergies();
+
+        void SetNMax(int);
 
         UEG(double, double);
         UEG();

@@ -12,9 +12,23 @@
 #include <iomanip>
 #include <queue>
 #include <unsupported/Eigen/CXX11/Tensor>
+#include <numeric>
 
 #include "ExcitedFunctional.h"
 #include "UEG.h"
+
+double CalcVariance(std::vector<double> Vec)
+{
+    double Sum = std::accumulate(Vec.begin(), Vec.end(), 0.0);
+    double Mean = Sum / Vec.size();
+    double Variance = 0.0;
+    for (int i = 0; i < Vec.size(); i++)
+    {
+        Variance += ((Vec[i] - Mean) * (Vec[i] - Mean));
+    }
+    Variance /= (Vec.size() - 1);
+    return Variance;
+}
 
 double ExcitedFunctional::CalculateExchange()
 {
@@ -25,15 +39,19 @@ double ExcitedFunctional::CalculateExchange()
 void ExcitedFunctional::GenerateExchange()
 {
     std::ofstream Output("xvsk.txt");
+    std::ofstream OutputVar("xvarvsk.txt");
     for (int n = 10; n < 100; n++)
     {
-        for (int i = 0; i < 10; i++)
-        {
-            myUEG.RandomExciteUEG(n, n, n);
-            myUEG.CalcKinetic();
-            myUEG.CalcExchange();
-            Output << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << std::endl;
-        }
+        myUEG.SetNMax(100);
+        
+        myUEG.RandomExciteUEG(n, n, n);
+        myUEG.GetVirtual();
+        myUEG.CalcKinetic();
+        myUEG.CalcExchange();
+        Output << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << std::endl;
+
+        myUEG.CalcExchangeVar();
+        OutputVar << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.VarExchange << std::endl;
     }
 }
 
