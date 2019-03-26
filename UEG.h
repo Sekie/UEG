@@ -24,12 +24,14 @@ class UEG
         std::vector< std::tuple<double, int, int, int> > bOccupiedLevels;
         std::vector< std::tuple<double, int, int, int> > aVirtualLevels;
         std::vector< std::tuple<double, int, int, int> > bVirtualLevels;
+        std::vector< std::vector< double > > InvK2;
         double EExchange, EFermi, EKinetic, VarExchange, n;
 
         void FillLevels();
         void ExciteUEG(double, double, double);
         void RandomExciteUEG(int, int, int);
         void GetVirtual();
+        void StoreInvK2();
         void CalcKinetic();
         void CalcExchange();
         void CalcExchangeVar();

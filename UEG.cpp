@@ -253,11 +253,11 @@ void UEG::RandomExciteUEG(int MaxNx, int MaxNy, int MaxNz)
 
 void UEG::GetVirtual()
 {
-    for (int nx = nxMax; nx < nxMax + 1; nx++)
+    for (int nx = -nxMax; nx < nxMax + 1; nx++)
     {
-        for (int ny = nyMax; ny < nyMax + 1; ny++)
+        for (int ny = -nyMax; ny < nyMax + 1; ny++)
         {
-            for (int nz = nzMax; nz < nzMax + 1; nz++)
+            for (int nz = -nzMax; nz < nzMax + 1; nz++)
             {
                 for (int i = 0; i < aOccupiedLevels.size(); i++)
                 {
@@ -271,6 +271,47 @@ void UEG::GetVirtual()
                     aVirtualLevels.push_back(tmpTuple);
                     bVirtualLevels.push_back(tmpTuple);
                 }
+            }
+        }
+    }
+}
+
+void UEG::StoreInvK2()
+{
+    for (int nx = -nxMax; nx < nxMax + 1; nx++)
+    {
+        for (int ny = -nyMax; ny < nyMax + 1; ny++)
+        {
+            for (int nz = -nxMax; nz < nzMax + 1; nz++)
+            {
+                std::vector<double> TmpVec;
+                for (int mx = -nxMax; mx < nxMax + 1; mx++)
+                {
+                    for (int my = -nyMax; my < nyMax + 1; my++)
+                    {
+                        for (int mz = -nxMax; mz < nzMax + 1; mz++)
+                        {
+                            int nx0 = nx + nxMax;
+                            int ny0 = ny + nyMax;
+                            int nz0 = nz + nzMax;
+                            int mx0 = mx + nxMax;
+                            int my0 = my + nyMax;
+                            int mz0 = mz + nzMax;
+
+                            // int Ind1 = nz0 * nzMax * nzMax + ny0 * nyMax + nx0;
+                            // int Ind2 = mz0 * nzMax * nzMax + my0 * nyMax + mx0;
+                            double dnx, dny, dnz;
+                            dnx = nx - mx;
+                            dny = ny - my;
+                            dnz = nz - mz;
+
+                            double KInv = 4.0 * M_PI * M_PI * (dnx * dnx / (Lx * Lx) + dny * dny / (Ly * Ly) + dnz * dnz / (Lz * Lz));
+                            KInv = 1.0 / KInv;
+                            TmpVec.push_back(KInv);
+                        }
+                    }
+                }
+                InvK2.push_back(TmpVec);
             }
         }
     }
