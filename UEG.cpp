@@ -141,6 +141,22 @@ void UEG::CalcExchangeVar()
     VarExchange *= ((4.0 * pow(2.0 * M_PI, 8)) / pow(Volume, 4)); // *4 for spin?
 }
 
+void UEG::CalcExchangeVarFromStorage()
+{
+    VarExchange = 0.0;
+    for (int i = 0; i < OccIdx.size(); i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            for (int a = 0; a < VirIdx.size(); a++)
+            {
+                VarExchange += InvK2[OccIdx[i]][VirIdx[a]] * InvK2[OccIdx[i]][VirIdx[a]];
+            }
+        }
+    }
+    VarExchange *= ((4.0 * pow(2.0 * M_PI, 8)) / pow(Volume, 4)); // *4 for spin?
+}
+
 double UEG::CalcAnalyticalKinetic()
 {
     double KE = 0.3 * kF * kF * NumElectrons;
@@ -248,6 +264,11 @@ void UEG::RandomExciteUEG(int MaxNx, int MaxNy, int MaxNz)
         std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
         aOccupiedLevels.push_back(tmpTuple);
         bOccupiedLevels.push_back(tmpTuple);
+
+        int nx0 = nx + nxMax;
+        int ny0 = ny + nyMax;
+        int nz0 = nz + nzMax;
+        OccIdx.push_back(nx0 * nyMax * nzMax + ny0 * nzMax + nz0);
     }
 }
 
@@ -270,6 +291,11 @@ void UEG::GetVirtual()
                     std::tuple<double, int, int, int> tmpTuple = std::make_tuple(E, nx, ny, nz);
                     aVirtualLevels.push_back(tmpTuple);
                     bVirtualLevels.push_back(tmpTuple);
+
+                    int nx0 = nx + nxMax;
+                    int ny0 = ny + nyMax;
+                    int nz0 = nz + nzMax;
+                    VirIdx.push_back(nx0 * nyMax * nzMax + ny0 * nzMax + nz0);
                 }
             }
         }

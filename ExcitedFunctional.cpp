@@ -46,11 +46,12 @@ void ExcitedFunctional::GenerateExchange()
 
         myUEG.RandomExciteUEG(n, n, n);
         myUEG.GetVirtual();
+        myUEG.StoreInvK2();
         myUEG.CalcKinetic();
         myUEG.CalcExchange();
         Output << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.EExchange / (double)myUEG.NumElectrons << std::endl;
 
-        myUEG.CalcExchangeVar();
+        myUEG.CalcExchangeVarFromStorage();
         OutputVar << myUEG.EKinetic / myUEG.Volume << "\t" << myUEG.VarExchange << std::endl;
     }
 }
