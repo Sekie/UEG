@@ -27,6 +27,9 @@ class UEG
         std::vector< std::vector< double > > InvK2;
         double EExchange, EFermi, EKinetic, VarExchange, n;
 
+        std::vector<int> OccIdx;
+        std::vector<int> VirIdx;
+
         void FillLevels();
         void ExciteUEG(double, double, double);
         void RandomExciteUEG(int, int, int);
@@ -35,6 +38,7 @@ class UEG
         void CalcKinetic();
         void CalcExchange();
         void CalcExchangeVar();
+        void CalcExchangeVarFromStorage();
         double CalcAnalyticalKinetic();
         double CalcAnalyticalExchange();
         double OneOverK2(int, int, bool);

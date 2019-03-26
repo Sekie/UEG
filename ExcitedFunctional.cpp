@@ -42,7 +42,7 @@ void ExcitedFunctional::GenerateExchange()
     std::ofstream OutputVar("xvarvsk.txt");
     for (int n = 10; n < 30; n++)
     {
-        myUEG.SetNMax(30);
+        myUEG.SetNMax(n);
 
         myUEG.RandomExciteUEG(n, n, n);
         myUEG.GetVirtual();
